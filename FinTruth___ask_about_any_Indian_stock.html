@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>FinTruth — ask about any Indian stock</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@500;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#141517;--panel:#1d1e21;--line:#33353a;--mut:#c3c6cc;--lo:#8fd6a8;--mid:#ebc873;--hi:#f2917f;color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:#fff;font:500 16px/1.6 "DM Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.mono{font-family:"Space Grotesk","DM Sans",system-ui,sans-serif;font-weight:700}
+.app{max-width:820px;margin:0 auto;padding:0 20px;min-height:calc(100dvh - env(safe-area-inset-top,0px));display:flex;flex-direction:column}
+header{display:flex;justify-content:space-between;align-items:center;padding:20px 0}
+.brand{font-weight:700;font-size:18px;display:flex;align-items:center;gap:10px}
+.brand{background:none;border:0;color:#fff;cursor:pointer;padding:0;font-size:21px;letter-spacing:-.01em}.home{background:none;border:1px solid var(--line);color:#fff;border-radius:999px;padding:7px 18px;font:inherit;font-weight:700;cursor:pointer}.home:hover{background:var(--panel)}
+.rn{color:var(--mut);font-size:13px}
+.feed{flex:1;display:flex;flex-direction:column;gap:18px;padding-bottom:12px}
+.hero{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:8vh 0 4vh}
+.hero h1{margin:0 0 16px;font-size:clamp(34px,7vw,58px);letter-spacing:-.03em;line-height:1.08;max-width:15ch;background:linear-gradient(180deg,#fff 30%,#9ca1aa);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p{margin:0;color:#fff;max-width:50ch;font-size:clamp(20px,3.6vw,28px);font-weight:700;letter-spacing:.04em;line-height:1.4;font-family:"Space Grotesk","DM Sans",system-ui,sans-serif}
+.chips,.bar{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:22px}
+.bar{justify-content:flex-start;margin-top:12px}
+.chip{background:none;color:#fff;border:1px solid var(--line);border-radius:999px;padding:8px 16px;font:inherit;font-size:15px;cursor:pointer}
+.chip:hover{background:var(--panel)}
+.hero .cov{font-size:13px;margin-top:26px}
+.me{align-self:flex-end;max-width:80%;background:#26272b;border-radius:14px 14px 4px 14px;padding:10px 14px;white-space:pre-wrap;overflow-wrap:anywhere}
+.bot{background:var(--panel);border-radius:14px 14px 14px 4px;padding:18px 20px;min-width:0;overflow-wrap:anywhere}
+.bot h3{margin:0;font-size:24px;letter-spacing:-.01em}
+.bot h4{margin:24px 0 8px;font-size:16px}
+.mut{color:var(--mut)}.sm{font-weight:400;font-size:15px}
+.Low{color:var(--lo)}.Moderate{color:var(--mid)}.High{color:var(--hi)}
+.gauge{position:relative;height:10px;border-radius:5px;margin:16px 0 8px;background:linear-gradient(90deg,var(--lo) 0 var(--a),var(--mid) var(--a) var(--b),var(--hi) var(--b) 100%)}
+.gauge i{position:absolute;top:-6px;width:4px;height:22px;border-radius:2px;background:#fff;box-shadow:0 0 0 2px var(--panel);transform:translateX(-50%)}
+.big{font-size:20px;font-weight:700}
+.story p{margin:0 0 6px;max-width:70ch}
+.rows{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));column-gap:32px}
+.rows div{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid var(--line)}
+.rows span:first-child{color:var(--mut)}.rows span:last-child{font-weight:600;text-align:right}
+ul.f{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+ul.f li{padding:10px 14px;background:var(--bg);border-radius:8px;border-left:3px solid var(--line)}
+ul.f li[data-k=High]{border-left-color:var(--hi)}ul.f li[data-k=Watch]{border-left-color:var(--mid)}
+.tg{font-weight:700;margin-right:8px}
+mark{background:rgba(242,145,127,.3);color:#fff;border-radius:3px;padding:0 2px;border-bottom:2px solid var(--hi)}
+.msg{white-space:pre-wrap;background:var(--bg);padding:12px 14px;border-radius:10px}
+.q{display:inline-block;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:0 6px;margin:2px 4px 2px 0;font-size:14px}
+.comp{position:sticky;bottom:0;background:linear-gradient(rgba(20,21,23,0),var(--bg) 24px);padding:24px 0 calc(10px + env(safe-area-inset-bottom,0px))}
+.box{display:flex;gap:8px;align-items:flex-end;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:8px 8px 8px 16px}
+.box:focus-within{border-color:#fff}
+textarea{flex:1;background:none;border:0;color:#fff;font:inherit;resize:none;outline:none;max-height:140px;padding:6px 0}
+textarea::placeholder{color:#8d9096}
+#send{width:38px;height:38px;border-radius:50%;border:0;background:#fff;color:#1d1e20;font-size:18px;font-weight:700;cursor:pointer;flex:none}
+.fine{margin:8px 0 0;text-align:center;color:var(--mut);font-size:12px}
+:focus-visible{outline:2px solid #fff;outline-offset:2px}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+.tr{display:flex;justify-content:space-between;gap:16px;padding:10px 0;border-bottom:1px solid var(--line)}
+.tr .sm{font-size:14px}.tv{text-align:right;min-width:120px;flex:none}.tv div:first-child{font-weight:600}.tv div:last-child{font-size:14px;font-weight:700}
+.terms{margin-top:14px}ul.f li[data-k=Low]{border-left-color:var(--lo)}
+.bot h3,.bot h4,.big{font-family:"Space Grotesk","DM Sans",system-ui,sans-serif}
+.bot h3{font-size:28px;font-weight:700;letter-spacing:-.02em}
+.bot h4{font-size:17px;font-weight:700;margin-top:28px}
+.bot{border:1px solid var(--line);box-shadow:0 8px 30px rgba(0,0,0,.28)}
+.bot b{font-weight:700}
+.fraud{margin-top:16px;padding:12px 14px;border:1px solid var(--hi);background:rgba(242,145,127,.12);border-radius:10px}
+.caret::after{content:"";display:inline-block;width:.55ch;height:1em;background:#fff;margin-left:4px;vertical-align:-.12em;animation:bl 1s steps(1) infinite}
+@keyframes bl{50%{opacity:0}}
+</style>
+</head>
+<body>
+<div class="app">
+<header><button class="brand mono" id="brandhome" aria-label="FinTruth home"><svg class="logo" viewBox="0 0 32 32" width="30" height="30" aria-hidden="true"><path d="M16 2.5 4.5 7v8.2c0 7 4.8 12.4 11.5 14.3 6.7-1.9 11.5-7.3 11.5-14.3V7z" fill="none" stroke="#fff" stroke-width="2" stroke-linejoin="round"/><circle cx="15" cy="14.5" r="5" fill="none" stroke="#fff" stroke-width="2"/><path d="m18.8 18.3 4 4" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/><path d="m12.7 14.6 1.7 1.7 3-3.3" fill="none" stroke="#8fd6a8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>FinTruth</button><button class="home" id="home">Home</button></header>
+<main id="feed" class="feed">
+<section id="hero" class="hero">
+<h1 class="mono">Every stock tells a story. Find the truth.</h1>
+<p>Search. Learn. Invest.</p>
+</section>
+</main>
+<div class="comp"><div class="box"><textarea id="in" rows="1" placeholder="Ask about a company, or paste a tip message…" aria-label="Ask FinTruth"></textarea><button id="send" aria-label="Send">↑</button></div>
+<p class="fine">Demo with sample data, rounded and illustrative. Not investment advice. FinTruth does not predict prices or recommend stocks.</p></div>
+</div>
+<script>
+const C=[
+{n:"TCS",s:"IT services",re:"TCS|Tata Consultancy",sr:3,m:{g:5,nm:19,de:0.1,ic:60,roe:50,pr:72,pl:0},
+ d:"India’s largest IT services exporter, serving global banks, retailers and manufacturers.",
+ news:["Global tech spending and deal pricing decide growth for IT services firms.","AI tools are changing how large IT contracts are priced and staffed."]},
+{n:"HDFC Bank",s:"Banking",re:"HDFC",sr:6,bank:1,m:{g:10,nm:20,de:null,ic:null,roe:14,pr:0,pl:0},
+ d:"One of India’s biggest private banks, with a large retail deposit and loan book.",
+ news:["Competition for deposits is squeezing bank margins across the sector.","Watch RBI rate decisions and how loan growth compares with deposit growth."]},
+{n:"ITC",s:"FMCG and cigarettes",re:"\\bITC\\b",sr:6,m:{g:6,nm:26,de:0,ic:150,roe:28,pr:0,pl:0},
+ d:"Cigarettes fund a growing business in packaged foods, hotels and paper.",
+ news:["Tax changes on cigarettes are the biggest swing factor for earnings.","Growth in its non-cigarette businesses is worth tracking each quarter."]},
+{n:"Reliance Industries",s:"Conglomerate",re:"Reliance|\\bRIL\\b",sr:12,m:{g:7,nm:8,de:0.4,ic:6,roe:9,pr:50,pl:0},
+ d:"Oil refining and chemicals alongside India’s biggest telecom and retail businesses.",
+ news:["Retail, telecom and energy run on different cycles, so read each segment separately.","Crude oil margins and telecom tariff changes move group earnings."]},
+{n:"Sun Pharma",s:"Pharmaceuticals",re:"Sun Pharma",sr:8,m:{g:9,nm:19,de:0.1,ic:25,roe:16,pr:54,pl:0},
+ d:"India’s largest drugmaker by sales, with a growing specialty medicines business.",
+ news:["US generic drug pricing and specialty launches drive profit.","Regulatory inspections at factories can disrupt supply."]},
+{n:"Maruti Suzuki",s:"Automobiles",re:"Maruti",sr:8,m:{g:8,nm:9,de:0,ic:60,roe:14,pr:58,pl:0},
+ d:"India’s largest carmaker, strongest in small and mid-size cars.",
+ news:["Fuel prices, interest rates and festive demand drive car sales.","The shift to electric and hybrid cars is a long-term question for the sector."]},
+{n:"Tata Steel",s:"Metals and mining",re:"Tata Steel",sr:18,m:{g:2,nm:3,de:0.9,ic:3,roe:5,pr:33,pl:0},
+ d:"Integrated steel maker with operations in India and Europe.",
+ news:["Steel prices, coal costs and cheap imports swing profits sharply.","Heavy capital spending and European operations affect its debt."]},
+{n:"Suzlon Energy",s:"Wind power equipment",re:"Suzlon",sr:34,m:{g:60,nm:14,de:0.1,ic:8,roe:30,pr:13,pl:0},
+ d:"Makes wind turbines. Recovered after a long debt restructuring.",
+ news:["Wind orders depend on government auctions and policy support.","Order book execution and working capital are the key things to check."]},
+{n:"Paytm (One97)",s:"Fintech",re:"Paytm|One97",sr:28,m:{g:20,nm:3,de:0,ic:null,roe:3,pr:0,pl:0},
+ d:"Payments and financial services app, now focused on reaching steady profits.",
+ news:["RBI rules on payments and lending directly shape fintech business models.","Check whether profit comes from core operations or one-time items."]},
+{n:"Vodafone Idea",s:"Telecom",re:"Vodafone|\\bVi\\b",sr:24,m:{g:3,nm:-60,de:-1,ic:0.2,roe:null,pr:48,pl:0},
+ d:"Third-largest mobile operator, carrying very large debt and dues.",
+ news:["Telecom tariffs, spectrum dues and funding decide its future.","Government support and any new fundraising are the key developments to track."]}
+,{n:"Infosys",s:"IT services",re:"Infosys|\\bINFY\\b",sr:5,m:{g:11,nm:16,de:0.1,ic:60,roe:28,pr:14,pl:0},
+ d:"India’s second-largest IT services firm, serving global banks, retailers and drug makers. Latest quarter shown: July to September 2026.",
+ news:[]}
+,{n:"Eternal (Zomato, Blinkit)",s:"Food delivery and quick commerce",re:"Eternal|Zomato|Blinkit",sr:12,m:{g:78,nm:0.5,de:0,ic:null,roe:1,pr:0,pl:0},
+ d:"Parent of Zomato and Blinkit. The 78% jump in sales partly reflects a change in how quick commerce sales are booked; like-for-like growth was about 58%. Latest quarter shown: July to September 2026.",
+ news:[]}
+,{n:"Ola Electric",s:"Electric two-wheelers",re:"Ola Electric|\\bOla\\b",sr:20,m:{g:-45,nm:-74,de:0.6,ic:0,roe:-60,pr:33,pl:13},
+ d:"Makes electric scooters and motorcycles and is building its own battery cells. Latest quarter shown: April to June 2026.",
+ news:[]}
+,{n:"Swiggy",s:"Food delivery and quick commerce",re:"Swiggy|Instamart",sr:20,m:{g:37,nm:-12,de:0.1,ic:null,roe:null,pr:0,pl:0},
+ d:"Food delivery and Instamart quick commerce app, still loss-making but narrowing its losses. Latest quarter shown: April to June 2026.",
+ news:[]}
+,{n:"LS Industries (LSIL)",s:"Textile company on paper, real case study",re:"LS Industries|\\bLSIL\\b|514446",sr:30,fraud:1,nr:1,fl:"Real case study: manipulation orders revoked, trading still suspended.",fb:"A BSE-listed textile firm was worth about ₹5,500 crore with almost no sales when SEBI barred it and its promoter in February 2025 over alleged price manipulation. Its value had touched ₹22,700 crore at the peak. SEBI revoked those orders on 9 October 2026 after its probe, but BSE trading has been suspended since December 2025 and inspections found no working textile business.",m:{g:0,nm:-100,de:0.1,ic:null,roe:-5,pr:76,pl:0},d:"Himachal Pradesh textile company with almost no sales for years. Shown as a real case study of a stock whose value had no link to its business. Figures are approximate.",news:[]}
+,{n:"Vishal Fabrics",s:"Denim and textiles, real pump-and-dump case study",re:"Vishal Fabrics|538598",sr:15,fraud:1,fl:"Real case study: the stock was used in a pump-and-dump (SEBI final order, June 2026).",fb:"SEBI named Vishal Fabrics as one of five stocks whose price and volume were pushed up by an outside network, using bulk SMS buy tips between 2017 and 2020. SEBI’s final order on 30 June 2026 banned 221 entities, and it named an individual investor as the mastermind. The company itself still runs a real denim business with about ₹1,584 crore of yearly sales.",m:{g:0,nm:2,de:0.35,ic:2.8,roe:6,pr:55,pl:0},d:"Ahmedabad denim and dyed-yarn maker, part of the Chiripal Group. Shown as a case study of a real business whose stock was used by manipulators. Latest figures: year to March 2026 and quarter to June 2026.",news:[]}
+,{n:"Satyam Computer Services",s:"IT services, 2009 fraud case study",re:"Satyam",sr:30,fraud:1,fb:"In January 2009 a letter from the founder said the accounts had been faked for years, and he was convicted in 2015. The numbers below are what the company reported before that, with the red flags to look for.",m:{g:33,nm:21,de:0,ic:60,roe:28,pr:4,pl:90},d:"Once a star of Indian IT. Shown here as it looked on paper before the fraud came out. Figures are approximate.",news:[]}
+,{n:"Nova Hypermesh Technologies",s:"Sudden “AI & Robotics” pivot, fictional scam-pattern example",re:"Nova Hyper|Hypermesh",sr:35,fraud:1,fic:1,fl:"Scam-pattern warning (fictional demo company).",fb:"This is an invented company built to show what a hyped stock with no real business looks like. The share price is up about 1,000% in a year after a sudden “AI and robotics” pivot, while sales are close to zero and nothing in the filings explains the jump.",m:{g:1,nm:-900,de:3.2,ic:0.1,roe:-45,pr:70,pl:85},d:"A dormant trading shell that announced an “AI and robotics” pivot. Has no clear product and almost no customers. Fictional, for demo only.",news:[]}
+];
+const $=s=>document.querySelector(s),esc=t=>t.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function score(c){const m=c.m;let s=c.sr;
+if(m.de!=null)s+=m.de<0?30:m.de>=2?25:m.de>=1?15:m.de>=.5?7:0;
+if(m.ic!=null)s+=m.ic<1.5?25:m.ic<3?12:0;
+s+=m.nm<0?20:m.nm<5?8:0;
+s+=m.pl>=20?20:m.pl>=5?8:0;
+if(m.g<0)s+=10;
+if(m.roe!=null&&m.roe<8)s+=5;
+return Math.min(100,s)}
+const band=s=>s<20?"Low":s<45?"Moderate":"High";
+function story(c){const m=c.m,o=[];
+o.push(c.nr?"Sales are almost nil, so growth and margins are not meaningful. The company still spends money without earning any.":m.g>=15?`Revenue is growing fast, about ${m.g}% a year.`:m.g>=5?`Revenue is growing steadily at about ${m.g}% a year.`:m.g>=0?`Revenue growth is slow, about ${m.g}% a year.`:`Revenue is shrinking by about ${-m.g}% a year.`);
+if(!c.nr)o.push(m.nm<0?`It loses money: about ₹${-m.nm} of loss for every ₹100 of revenue.`:`It keeps about ₹${m.nm} as profit from every ₹100 of revenue${m.nm<5?", which is a thin cushion":""}.`);
+if(c.bank)o.push("Banks borrow by nature, so normal debt ratios do not apply. Look at bad loans (NPAs) and capital strength instead.");
+else o.push(m.de<0?"Its net worth is negative: liabilities are bigger than assets. That is a serious warning sign.":m.de<.5?"Debt is low compared with the company’s own capital.":m.de<1.5?`Debt is ${m.de} times its own capital. That is manageable but worth watching.`:`Debt is ${m.de} times its own capital, which is heavy.`);
+if(m.ic!=null)o.push(m.ic<1.5?"Operating profit does not comfortably cover interest payments.":`Operating profit covers interest ${m.ic>50?"more than 50":m.ic} times.`);
+o.push(m.pr?(m.pl>0?`${m.pl}% of promoter shares are pledged. Pledged shares can be sold by lenders if the price falls.`:"No promoter shares are pledged."):"There is no promoter group. Professional management runs the company.");
+return o}
+function alerts(c){const m=c.m,a=[];
+if(m.nm<0)a.push(["High",`Net loss: about ₹${-m.nm} lost for every ₹100 of revenue.`]);
+if(m.de!=null){if(m.de<0)a.push(["High","Negative net worth: liabilities are larger than assets."]);else if(m.de>=1.5)a.push(["High",`Heavy debt at ${m.de} times equity.`]);else if(m.de>=.8)a.push(["Watch",`Debt is ${m.de} times equity. Check how it will be repaid.`])}
+if(m.ic!=null){if(m.ic<1.5)a.push(["High","Operating profit barely covers, or does not cover, interest payments."]);else if(m.ic<3)a.push(["Watch","Interest cover is thin. One weak quarter could strain repayments."])}
+if(m.pl>=20)a.push(["High",`${m.pl}% of promoter shares are pledged.`]);else if(m.pl>=5)a.push(["Watch",`${m.pl}% of promoter shares are pledged.`]);
+if(m.g<0)a.push(["Watch","Revenue fell compared with last year."]);
+if(m.nm>=0&&m.nm<5)a.push(["Watch","Profit margin is thin, so small cost increases hurt."]);
+if(!a.length)a.push(["Note","The basic checks show no red flags."]);
+a.push(["Note","Sample data. Confirm against the latest results on the BSE or NSE website."]);
+return a}
+
+const R=[
+["guarant\\w*|risk[- ]?free|no risk|zero risk|100 ?% ?(?:sure|safe|profit|returns?)",30,"Guaranteed or risk-free returns","Every market investment carries risk. No one honest can promise a return."],
+["sure ?shot|jackpot|multi-?bagger|rocket|blast|bumper",15,"Hype words","Hype words are meant to trigger greed, not to inform."],
+["insider|operators?|big players?|inside (?:info|news|tip)|leaked|confidential tip",25,"Claims of insider information","Trading on inside information is illegal. Scammers use the phrase to sound exclusive."],
+["(?:tomorrow|today)[^.\\n]{0,40}(?:upper|lower) circuit|upper circuit",15,"Predicts exact price moves","No one can know a price move in advance."],
+["\\b\\d{1,3} ?x\\b|double (?:your|money)|triple|\\d{2,4} ?% ?(?:profit|returns?|gains?)",20,"Unrealistic return claims","Promises of doubling money or huge percentages are the classic bait."],
+["(?:target|tgt)\\s*[:\\-]?\\s*(?:₹|rs\\.?)?\\s*\\d+|(?:in|within)\\s*\\d+\\s*(?:days?|weeks?|hrs?|hours?)",15,"Fixed target in a fixed time","Real research gives reasoning and ranges, not a sure price on a sure date."],
+["t\\.me/\\S+|telegram|whatsapp group|join (?:our |my |the )?(?:vip|premium|group|channel)|vip (?:group|channel|membership)|dm (?:me|us)",15,"Pushes you into a private group","Private groups are where pressure builds and payments are asked for."],
+["\\bupi\\b|gpay|phonepe|(?:pay|send|deposit)\\s[^.\\n]{0,25}(?:₹|rs\\.?|fee)|registration fee|subscription fee",25,"Asks for money up front","Paying a stranger a fee for tips is a common route to losing money."],
+["limited (?:seats|slots|time|spots)|hurry|last chance|today only|act fast|only \\d+ (?:seats|slots|spots)|join now|before (?:it|market) opens",15,"False urgency","Rushing you stops you from checking the facts."],
+["sebi[- ]?(?:registered|approved|certified)",10,"Claims SEBI registration","Ask for the registration number (it starts with INH or INA) and verify it on SEBI’s website.",/IN[HA]\d{9}/i],
+["\\bbuy (?:now|this|it|today)|\\bbuy\\b[^.\\n]{0,20}(?:above|below|at)\\b|accumulate",8,"Direct buy call","Telling people what to buy requires SEBI registration as an adviser or analyst."]
+];
+const SAMPLES=["🔥 SURE SHOT TIP 🔥 Insider info from big operators: this SME stock will hit upper circuit tomorrow! Target ₹120 in 3 days, 100% guaranteed profit. Join our VIP Telegram group t.me/dalalking_vip now, only 5 slots left! Pay ₹999 registration fee on UPI to get the full list. SEBI registered.","Accumulate ITC on dips. Target 520 in 6 months, my view only. Do your own research.","TCS board has approved an interim dividend. The record date is in the exchange filing. Read the full notice on the BSE website."];
+function scan(t){const hits=[],rg=[];
+R.forEach(([p,w,l,y,ok])=>{if(ok&&ok.test(t))return;const r=new RegExp(p,"gi"),f=[];let x;
+while((x=r.exec(t))){if(!x[0]){r.lastIndex++;continue}f.push(x[0].trim());rg.push([x.index,x.index+x[0].length])}
+if(f.length)hits.push({w,l,y,f:[...new Set(f)].slice(0,3)})});
+rg.sort((a,b)=>a[0]-b[0]);const mg=[];rg.forEach(r=>{const l=mg[mg.length-1];if(l&&r[0]<=l[1])l[1]=Math.max(l[1],r[1]);else mg.push([...r])});
+let h="",p=0;mg.forEach(([a,b])=>{h+=esc(t.slice(p,a))+"<mark>"+esc(t.slice(a,b))+"</mark>";p=b});h+=esc(t.slice(p));
+return{hits,h,s:Math.min(100,hits.reduce((a,x)=>a+x.w,0))}}
+
+const X={
+"TCS":{ebm:26,roce:58,cr:2.6,ind:[[1,"Clients restart delayed IT projects","Revived projects mean more work and revenue for IT services firms."],[-1,"AI tools push clients to ask for lower prices","Cheaper delivery can shrink revenue per project across the sector."]],co:[[1,"Order book stays strong","A large order book gives visible revenue for coming quarters."],[-1,"Staff cuts and restructuring continue","Savings help margins, but they signal slower growth ahead."]]},
+"HDFC Bank":{bx:[["Gross NPA","About 1.3%","Share of loans where borrowers stopped paying. Lower is better.",1],["Capital adequacy","About 19%","Capital cushion against losses. Higher than the RBI minimum is safer.",1]],ind:[[1,"Credit demand stays healthy","Strong loan demand lifts bank interest income."],[-1,"Deposits grow slower than loans across banks","Banks pay more for deposits, which squeezes margins."]],co:[[1,"Loan and deposit base keeps growing","A bigger base means more interest income."],[-1,"Margins face pressure from deposit costs","Less earned on each loan slows profit growth."]]},
+"ITC":{ebm:37,roce:37,cr:3,ind:[[1,"Rural demand for packaged goods improves","FMCG firms sell more when village incomes rise."],[-1,"Food and packaging input costs rise","Higher costs cut margins unless prices go up."]],co:[[1,"Non-cigarette businesses keep growing","Less dependence on cigarettes makes earnings steadier."],[-1,"Tax risk on cigarettes remains","A tax hike can cut volumes and profit from its main earner."]]},
+"Reliance Industries":{ebm:17,roce:9,cr:1,ind:[[1,"Mobile data use keeps rising","More data use supports telecom revenue per user."],[-1,"Global crude oil prices stay volatile","Refining margins swing with oil, making profit less predictable."]],co:[[1,"Retail and digital arms keep expanding","Newer businesses reduce dependence on oil."],[-1,"Heavy investment plans raise capital needs","Big spending can lift debt if profit does not keep pace."]]},
+"Sun Pharma":{ebm:28,roce:20,cr:2.4,ind:[[1,"Demand for specialty and chronic-care drugs grows","Higher-value drugs earn better margins than basic generics."],[-1,"US generic drug prices stay under pressure","Lower prices cut earnings from the biggest export market."]],co:[[1,"Specialty medicines gain share of sales","Higher-margin products can lift overall profit."],[-1,"Factory inspections can trigger regulator action","Warnings can delay approvals and hurt sales."]]},
+"Maruti Suzuki":{ebm:13,roce:17,cr:1.3,ind:[[1,"Festive season lifts car bookings","Peak demand improves sales and plant use."],[-1,"Higher car prices and loan rates slow budget buyers","Maruti depends on first-time and budget buyers."]],co:[[1,"New model launches widen the range","More models, especially SUVs, can win back buyers."],[-1,"Weaker small-car sales hit volumes","Lower volumes spread fixed costs over fewer cars."]]},
+"Tata Steel":{ebm:12,roce:8,cr:0.8,ind:[[1,"Infrastructure spending lifts steel demand","More roads, rail and buildings use more steel."],[-1,"Cheap steel imports hurt domestic prices","Lower prices cut profit per tonne."]],co:[[1,"India capacity expansion continues","More low-cost output improves earnings over time."],[-1,"European operations weigh on profit","Losses and restructuring costs drag group results."]]},
+"Suzlon Energy":{ebm:19,roce:35,cr:1.4,ind:[[1,"Push for more renewable capacity","More wind projects mean more turbine orders."],[-1,"Land and grid delays slow installations","Slower installations delay revenue for turbine makers."]],co:[[1,"Order book is large","Orders turn into revenue over the next few years."],[-1,"Expectations are high after a strong recovery","A miss in delivery can lead to a sharp fall."]]},
+"Paytm (One97)":{ebm:2,roce:3,cr:2.5,ind:[[1,"Digital payment volumes keep rising","More transactions grow fee-based revenue."],[-1,"RBI tightens rules for payment and lending firms","Stricter rules can limit what fintechs are allowed to do."]],co:[[1,"Cost cuts move it closer to steady profit","Lower costs help turn losses into profit."],[-1,"Past regulator restrictions still weigh on the business","Rebuilding trust and merchant ties takes time."]]},
+"Vodafone Idea":{ebm:45,roce:null,cr:0.2,ind:[[1,"Operators raise mobile tariffs","Higher tariffs raise income for all telecom firms."],[-1,"Rivals win users with 5G offers","Losing subscribers cuts revenue."]],co:[[1,"Government support eases cash pressure on dues","Relief on payments gives breathing room."],[-1,"Very high debt and dues remain","Interest and dues can absorb all operating profit."]]}
+,"Infosys":{ebm:24,roce:37,cr:2.4,ind:[[1,"Clients keep signing large AI-linked deals","Big multi-year deals give IT firms steady work for coming quarters."],[-1,"Clients stay cautious on tech spending","Slow spending keeps revenue growth low across Indian IT."]],co:[[1,"AI-linked revenue grew 29% from the previous quarter","Faster growth in a new line can lift overall sales over time."],[1,"Interim dividend of ₹26 per share declared (Oct 2026)","Regular payouts point to steady cash generation."],[-1,"Full-year revenue growth guidance cut to 1% to 2%","A lower outlook means slower growth than management expected earlier."]]}
+,"Eternal (Zomato, Blinkit)":{ebm:3,roce:2,ind:[[1,"Quick commerce keeps growing fast in cities","More orders for groceries in minutes lift revenue for delivery firms."],[-1,"Rivals keep spending to win quick commerce users","Heavy competition can hold back profit."]],co:[[1,"Blinkit plans 5,000 stores by March 2028","More stores can bring more orders and lower cost per order."],[1,"Blinkit’s core profit is positive for the sixth quarter in a row","Each store is earning more than it costs to run."],[-1,"Q2 profit of ₹125 crore was well below what analysts expected","Sales are growing fast, but profit is still very thin."]]}
+,"Ola Electric":{ebm:-30,ind:[[1,"Push for battery storage and clean energy","Ola plans to sell battery energy storage, a possible new source of revenue."],[-1,"Competition in electric two-wheelers keeps rising","More rivals chase the same buyers, which can hold back sales and prices."]],co:[[1,"Quarterly loss narrowed to ₹336 crore, the lowest in seven quarters","Smaller losses mean less cash is burned each quarter."],[-1,"Revenue fell 45% compared with a year ago","Falling sales make break-even harder to reach."],[-1,"Founder pledged shares again ahead of a rights issue (Oct 2026)","Pledges can add pressure on the price if it falls."],[-1,"₹1,000 crore rights issue planned after a ₹780 crore QIP in June","Repeated fundraising shows the business needs outside cash and can dilute shareholders."]]}
+,"Swiggy":{ebm:-10,ind:[[1,"Quick commerce demand keeps rising","More people ordering groceries in minutes lifts sales for apps like Instamart."],[-1,"Heavy competition in quick commerce","Rivals spending to win users can keep losses high."]],co:[[1,"Net loss narrowed 34% to ₹791 crore","Smaller losses show costs are coming under control."],[1,"Instamart reached break-even on each order","Orders no longer lose money before overheads, though the segment still lost money overall."],[-1,"Shares fell about 5% after results as brokerages questioned quick commerce","Investors are still unsure how soon the business can turn profitable."]]}
+,"LS Industries (LSIL)":{roce:-5,fx:[["Market value far above the business","SEBI said the company was worth about ₹5,500 crore with zero sales, and that its value had reached ₹22,700 crore at the peak."],["No working business found","BSE site visits in 2024 and 2025 found no plant, machinery, raw materials or enough staff for a textile business."],["Large stake changed hands for $1","SEBI’s 2025 order said a 12% stake moved to a Dubai-based investor for just $1 in 2022. Those orders were later revoked, but the transfer shows how thin the ownership story was."],["Trading suspended since December 2025","Shares cannot be bought or sold, and SEBI said BSE is free to delist them."],["Listing rule breaches and ignored summons","SEBI found breaches of listing rules and began action for not answering summons. Some matters were sent to law enforcement agencies."]],ind:[[-1,"Regulators watch low-sales stocks with huge valuations","SEBI began this case after a media report on a zero-sales company worth thousands of crores."]],co:[[-1,"SEBI barred the company and its promoter (Feb 2025)","The regulator alleged a scheme to push up the price with almost no business behind it."],[1,"SEBI revoked its manipulation orders (9 Oct 2026)","The regulator said the manipulation allegations could not be sustained. This does not fix the missing business."],[-1,"BSE trading suspension continues","With no trading and a possible delisting, shareholders may not be able to sell."]]}
+,"Vishal Fabrics":{ebm:7,roce:10,ocf:"Only about 17% of operating profit turned into cash in FY26",fx:[["Stock named in a SEBI pump-and-dump case","SEBI’s June 2026 final order covered five stocks including this one. Retail buyers were allegedly sold shares at inflated prices by connected entities."],["Buy tips sent by bulk SMS","SEBI said the network sent mass text messages recommending the stocks while connected entities sold into the buying."],["Promoter stake fell from 69% to 55% in 2025","A lower owner stake can mean less commitment. It fell as a large foreign fund bought in during 2025."],["Sales have stopped growing","Sales were flat over the last year and grew only about 1% a year over three years."],["Customers take a long time to pay","Customers took about 148 days to pay in FY26, which ties up cash and can hide weak collections."]],ind:[[-1,"SEBI keeps cracking down on pump-and-dump schemes","Small investors who bought on tips in these stocks were left holding shares sold at inflated prices."]],co:[[-1,"SEBI’s final order named Vishal Fabrics among five manipulated stocks (30 Jun 2026)","The order was about an outside network, but it shows the stock’s past price was not driven by the business alone."],[1,"India Ratings affirmed its bank loan ratings (Sep 2026)","A steady rating suggests lenders still see the business as able to repay."],[1,"Real sales of about ₹1,584 crore and steady profit","It earns profit from a working denim business."],[-1,"Share price is down about 43% over the past year","A sharp fall shows investor confidence weakened, even though profit stayed positive."]]}
+,"Nova Hypermesh Technologies":{ebm:-420,roce:-30,cr:0.4,ocf:"Cash is flowing out while the stock is shooting up",fx:[["Almost no real revenue","Yearly sales are tiny next to its market value. A company worth thousands of crores on near-zero sales is priced on story, not business."],["Share price up about 1,000% in a year with no real news","A price that multiplies without new orders, results or filings is usually driven by hype or by a few operators, not by the business."],["Sudden pivot to a hot theme","A company with no past in AI or robotics now uses “AI” and “robotics” in every announcement, but there is no product, customer list, hired team or patent you can check."],["Promoters pledged most of their shares","With 85% of their stake pledged, owners need the price to stay high. A fall can force lenders to sell and crash the stock."],["Heavy borrowing to fund losses","It borrows to cover losses while profit cannot pay even the interest."],["Tips and groups pushing the stock","Telegram and social media groups are promoting it with targets and guarantees. This is a classic pump-and-dump pattern."]],ind:[[-1,"Retail traders are chasing AI and robotics themed stocks","When a theme is hot, weak companies can ride the hype. The fall is often just as fast."]],co:[[-1,"Stock hits upper circuit again and again with no announcement","Repeated circuits on thin volume can mean a few players are lifting the price."],[-1,"Management promises “revolutionary” launch but gives no date or numbers","Claims without figures cannot be checked, so they should not be trusted."]]},
+"Satyam Computer Services":{ebm:24,roce:30,cr:3,ocf:"Reported cash was later found to be fake",fx:[["Reported margins were far above reality","Later findings showed a reported 24% operating margin was really about 3%."],["Cash that did not exist","About ₹5,000 crore of reported cash and bank balance was non-existent. Cash-rich firms that still borrow deserve a hard look."],["Deal to buy family firms","In December 2008 it tried to buy two companies linked to the founder’s family. Investors protested and it was called off."],["Founders held little and had pledged shares","Owners with a tiny stake and loans against it have less to lose and more pressure to show good numbers."],["Auditor missed it","Its auditor signed off for years. SEBI later barred the PwC network from auditing listed Indian firms for two years."]],ind:[[1,"Outsourcing boom lifted Indian IT in the 2000s","A strong sector made rapid growth look believable."],[-1,"Global financial crisis hit tech spending in 2008","Weak demand makes it harder to hide gaps in the books."]],co:[[-1,"Chairman’s letter said accounts were faked (Jan 2009)","If the top person says the numbers are false, no ratio can be trusted."],[-1,"Founder sentenced to 7 years in prison (2015)","Courts found forgery and fraud, and shareholders lost billions."]]}
+};
+C.forEach(c=>Object.assign(c,X[c.n]));
+const feed=$("#feed"),inp=$("#in");
+const RM=matchMedia("(prefers-reduced-motion: reduce)").matches;
+const HERO=feed.innerHTML;
+function typeIn(el,ms,done){if(RM){done&&done();return}
+const w=document.createTreeWalker(el,NodeFilter.SHOW_TEXT),ns=[];let n;
+while((n=w.nextNode()))if(n.nodeValue.trim())ns.push([n,n.nodeValue]);
+ns.forEach(([n])=>{n.nodeValue=""});
+const tot=ns.reduce((a,[,t])=>a+t.length,0),step=Math.max(2,Math.ceil(tot/(ms/16)));let i=0,k=0;
+const tick=()=>{let q=step;while(q>0&&i<ns.length){const [n,t]=ns[i],take=Math.min(q,t.length-k);k+=take;q-=take;n.nodeValue=t.slice(0,k);if(k>=t.length){i++;k=0}}
+if(i<ns.length)setTimeout(tick,16);else if(done)done()};tick()}
+const tgc=k=>k==="High"?"High":k==="Watch"?"Moderate":"mut";
+const lv=l=>l===1?["Good","Low"]:l===0?["Fair","Moderate"]:l===-1?["Weak","High"]:["Info","mut"];
+function terms(c){const m=c.m,r=[],P=(n,v,mn,l)=>r.push([n,v,mn,l]);
+P("Revenue growth",c.nr?"Not meaningful":m.g+"% a year","How fast sales are rising compared with last year.",m.g>=10?1:m.g>=0?0:-1);
+P("Net profit margin",c.nr?"Not meaningful":m.nm+"%","Profit left from every ₹100 of sales after all costs and tax.",m.nm>=12?1:m.nm>=5?0:-1);
+if(c.ebm!=null)P("EBITDA margin",c.ebm+"%","Profit from core operations before interest, tax and wear-and-tear costs, per ₹100 of sales.",c.ebm>=20?1:c.ebm>=10?0:-1);
+P("Return on equity (ROE)",m.roe==null?"Not meaningful":m.roe+"%","Profit earned on shareholders’ money. Higher means capital is used well.",m.roe==null?-1:m.roe>=15?1:m.roe>=8?0:-1);
+if(c.roce!=null)P("Return on capital employed (ROCE)",c.roce+"%","Profit earned on all money in the business, both equity and debt.",c.roce>=15?1:c.roce>=10?0:-1);
+if(m.de!=null)P("Debt to equity",m.de<0?"Negative net worth":m.de+" times","Borrowings compared with shareholders’ money. Lower is safer.",m.de<0?-1:m.de<.5?1:m.de<1.5?0:-1);
+if(m.ic!=null)P("Interest cover",m.ic>50?"Above 50 times":m.ic+" times","How many times operating profit pays the interest bill. Below 3 is thin.",m.ic>=6?1:m.ic>=3?0:-1);
+if(c.cr!=null)P("Current ratio",c.cr,"Short-term assets compared with bills due within a year. Below 1 is a liquidity risk.",c.cr>=1.5?1:c.cr>=1?0:-1);
+if(c.ocf)P("Cash check",c.ocf,"Does the cash match the profit? Real cash should roughly follow reported profit.",-1);
+(c.bx||[]).forEach(x=>P(...x));
+P("Promoter holding",m.pr?m.pr+"%":"No promoter group","Share owned by the founding group. Higher usually means committed owners.",null);
+P("Promoter pledge",m.pr?m.pl+"%":"Not applicable","Promoter shares pledged for loans. Lenders can sell them if the price falls.",m.pr?(m.pl===0?1:m.pl<20?0:-1):null);
+[["P/E ratio","Price divided by yearly profit per share. Shows how expensive the stock is compared with its earnings."],["P/B ratio","Price divided by book value per share. Useful for banks and asset-heavy firms."],["EPS","Profit earned per share."],["Market cap","Share price times number of shares: the company’s total market value."],["Dividend yield","Yearly dividend as a percentage of the share price."]].forEach(([n,d])=>P(n,"Needs live price",d,null));
+return r}
+function flags(c){const m=c.m,RD=[],GR=[],a=(x,t,w)=>x.push([t,w]);
+(c.fx||[]).forEach(([t,w])=>a(RD,t,w));
+if(m.nm<0)a(RD,"Company is making a net loss","It spends more than it earns, so it must borrow or raise money to survive.");else if(m.nm>=15)a(GR,"Strong profit margin","It keeps a large share of every sale as profit.");
+if(m.de!=null){if(m.de<0)a(RD,"Negative net worth","Liabilities exceed assets, leaving little for shareholders if things go wrong.");else if(m.de>=1.5)a(RD,"Heavy debt","Large repayments can strain cash in a weak year.");else if(m.de<.5)a(GR,"Low debt","Little pressure from lenders, so it can handle a bad year.")}
+if(m.ic!=null){if(m.ic<1.5)a(RD,"Interest is barely covered","Profit may not be enough to pay lenders.");else if(m.ic>=6)a(GR,"Interest is paid easily","Operating profit is many times the interest bill.")}
+if(m.pl>=5)a(RD,m.pl+"% of promoter shares pledged","A price fall can force lenders to sell, pushing the price down further.");else if(m.pr&&m.pl===0)a(GR,"No promoter shares pledged","Owners are not using their shares to borrow.");
+if(m.g<0)a(RD,"Revenue is falling","Shrinking sales make it harder to grow profit.");else if(m.g>=10)a(GR,"Revenue is growing fast","Rising sales give room for profit growth.");
+if(m.roe!=null){if(m.roe<8)a(RD,"Low return on equity","The business earns little on shareholders’ money.");else if(m.roe>=15)a(GR,"High return on equity","The company turns shareholders’ money into profit efficiently.")}
+if(c.cr!=null){if(c.cr<1)a(RD,"Short-term bills exceed short-term assets","It may need to borrow to pay near-term bills.");else if(c.cr>=1.5)a(GR,"Comfortable short-term cash position","It can pay near-term bills from near-term assets.")}
+(c.bx||[]).forEach(x=>{if(x[3]===1)a(GR,x[0]+": "+x[1],x[2])});
+if(c.fraud)GR.length=0;
+c.ind.concat(c.co).forEach(([s,h,w])=>a(s>0?GR:RD,h,w));
+return{red:RD,green:GR}}
+function rev(c){const s=score(c),b=band(s),f=flags(c);
+const row=([n,v,mn,l])=>{const [lab,cl]=lv(l);return `<div class="tr"><div><b>${n}</b><br><span class="mut sm">${mn}</span></div><div class="tv"><div>${v}</div><div class="${cl}">${lab}</div></div></div>`};
+const nl=a=>`<ul class="f">${a.map(([x,h,w])=>`<li data-k="${x>0?"Low":"High"}"><span class="tg ${x>0?"Low":"High"}">${x>0?"Positive":"Negative"}</span>${h}<br><span class="mut">Why it matters: ${w}</span></li>`).join("")}</ul>`;
+const fl=(a,k)=>`<ul class="f">${a.map(([t,w])=>`<li data-k="${k}"><b>${t}</b><br><span class="mut">Why: ${w}</span></li>`).join("")||`<li>None found in the basic checks.</li>`}</ul>`;
+return `<h3>${c.n}</h3><p class="mut" style="margin:2px 0 0">${c.s}. ${c.d}</p>
+<div class="gauge" style="--a:20%;--b:45%"><i style="left:${s}%"></i></div>
+<div class="big"><span class="${b}">${b} risk</span> <span class="mut sm">score ${s} out of 100</span></div>
+${c.fraud?`<div class="fraud"><b>${c.fl||"Confirmed fraud (historical case)."}</b> ${c.fb} ${f.red.length} red flags found.</div>`:""}<h4>Industry news</h4>${nl(c.ind)}
+<h4>Company news</h4>${nl(c.co)}
+<p class="mut sm" style="margin:8px 0 0">${c.fic?"Fictional demo scenario. Not a real company.":c.fraud?"These are real past events.":"Sample headlines for the demo. A live news feed plugs in here."}</p>
+<h4>Financial analysis</h4><div class="story">${story(c).map(t=>`<p>${t}</p>`).join("")}</div>
+<div class="terms">${terms(c).map(row).join("")}</div>
+<h4 class="High">Red flags</h4>${fl(f.red,"High")}
+<h4 class="Low">Green flags</h4>${fl(f.green,"Low")}`}
+function tip(r,co){const s=r.s,v=s<15?["No clear scam patterns","Low"]:s<40?["Looks suspicious","Moderate"]:["Likely a scam","High"];
+return `<div class="big ${v[1]}">${v[0]} <span class="mut sm">scam score ${s} out of 100</span></div>
+<div class="gauge" style="--a:15%;--b:40%"><i style="left:${s}%"></i></div>
+<h4>Your message, with flags</h4><div class="msg">${r.h}</div>
+<h4>What I found</h4>${r.hits.length?`<ul class="f">${r.hits.map(h=>`<li data-k="${h.w>=20?"High":"Watch"}"><span class="tg ${h.w>=20?"High":"Moderate"}">${h.l}</span>${h.f.map(f=>`<span class="q">${esc(f)}</span>`).join("")}<br><span class="mut">${h.y}</span></li>`).join("")}</ul>`:`<p class="mut">No known scam patterns matched. That does not make it safe.</p>`}
+${co.length?`<div class="bar">${co.map(c=>`<button class="chip" data-q="Analyse ${c.n}">Review ${c.n}</button>`).join("")}</div>`:""}
+<p class="mut" style="margin:18px 0 0">If a message asks for money or pushes you into a group, do not pay or join. Check any adviser’s registration on SEBI’s website first.</p>`}
+function route(t){const r=scan(t),co=C.filter(c=>new RegExp(c.re,"i").test(t));
+if(r.hits.length&&(t.length>40||!co.length))return tip(r,co);
+if(co.length)return rev(co[0]);
+return `<p style="margin:0">I couldn’t match a company or a scam pattern in that. In this demo I cover:</p><div class="bar">${C.map(c=>`<button class="chip" data-q="Analyse ${c.n}">${c.n}</button>`).join("")}</div>`}
+function add(cls,html){const d=document.createElement("div");d.className=cls;d.innerHTML=html;feed.appendChild(d);d.scrollIntoView({block:"end"});return d}
+function send(t){t=t.trim();if(!t)return;const h=$("#hero");if(h)h.remove();
+add("me",esc(t));const w=add("bot mut","Reading filings…");
+setTimeout(()=>{w.className="bot";w.innerHTML=route(t);w.scrollIntoView({block:"start"});typeIn(w,3200)},450);
+inp.value="";inp.style.height="auto"}
+document.addEventListener("click",e=>{const b=e.target.closest("[data-q],[data-s]");if(!b)return;send(b.dataset.s?SAMPLES[0]:b.dataset.q)});
+$("#send").onclick=()=>send(inp.value);
+inp.addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();send(inp.value)}});
+inp.addEventListener("input",()=>{inp.style.height="auto";inp.style.height=Math.min(inp.scrollHeight,140)+"px"});
+function heroType(){const h=document.querySelector("#hero h1"),p=document.querySelector("#hero p");if(!h||RM)return;h.classList.add("caret");typeIn(h,1000,()=>{h.classList.remove("caret");typeIn(p,1500)})}
+function home(){feed.innerHTML=HERO;inp.value="";inp.style.height="auto";window.scrollTo(0,0);heroType()}
+$("#home").onclick=home;$("#brandhome").onclick=home;
+const PH=["Ask about a company, or paste a tip message…","Try Reliance, ITC or Vodafone Idea…","Ask about Satyam, a real fraud case…","Paste a Telegram tip to scan it…"];let pi=0;
+setInterval(()=>{if(!inp.value){pi=(pi+1)%PH.length;inp.placeholder=PH[pi]}},3200);
+heroType();
+</script>
+</body>
+</html>
